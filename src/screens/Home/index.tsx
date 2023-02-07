@@ -1,44 +1,82 @@
-import { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, useWindowDimensions, View } from "react-native";
-import YoutubeIframe, { PLAYER_STATES } from "react-native-youtube-iframe";
-import * as ScreenOrientation from "expo-screen-orientation";
+import { useState, useRef } from "react";
+import { View, ScrollView, useWindowDimensions } from "react-native";
 
-import { styles, VIDEO_HEIGHT, SCREEN_SPACE } from "./styles";
+import { ProgressBar } from "../../components/ProgressBar";
+import { VideoCard } from "../../components/VideoCard";
+
+import { styles } from "../../styles/global";
+
+let videoIds = [
+  "dQw4w9WgXcQ",
+  "cOchidcyv9Q",
+  "CcAYObnlehE",
+  "e-P5IFTqB98",
+  "d9MyW72ELq0",
+  "kpz8lpoLvrA",
+  "wBLGSAipX2M",
+  "JUETbeMY1IE",
+  "PKhAmNWME5M"
+]
+
+interface ScrollProps {
+  layoutMeasurement: {
+    height: number;
+  };
+  contentOffset: {
+    y: number;
+  };
+  contentSize: {
+    height: number;
+  };
+}
 
 export function Home() {
-  const [videoReady, setVideoReady] = useState(false);
+  const [percentage, setPercentage] = useState(0);
 
-  const { width } = useWindowDimensions();
-  const VIDEO_WIDTH = width - (SCREEN_SPACE * 2);
+  const scrollRef = useRef<ScrollView>(null);
 
-  const onFullScreenChange = useCallback((isFullScreen: boolean) => {
-    if (isFullScreen) {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-    } else {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-    }
-  }, []);
+  const dimensions = useWindowDimensions();
 
-  const onChangeState = useCallback((state: string) => {
-    if (state === PLAYER_STATES.ENDED) {
-      Alert.alert("Video ended", "Please, hit the like, subscribe and share!")
-    }
-  }, []);
+  function scrollPercentage ({ layoutMeasurement, contentOffset, contentSize }: ScrollProps) {
+    const visibleContent = Math.ceil((dimensions.height / contentSize.height) * 100);
+    
+    const value  = ((layoutMeasurement.height + contentOffset.y) / contentSize.height) * 100;
+    
+    setPercentage(value < visibleContent ? 0 : value);
+  }
+
+  function handleScrollMoveTop() {
+    scrollRef.current?.scrollTo({
+      x: 0,
+      y: 0,
+      animated: true
+    })
+  }
 
   return (
     <View style={styles.container}>
-      <View style={styles.player}>
-        <YoutubeIframe
-          videoId="dQw4w9WgXcQ"
-          width={VIDEO_WIDTH}
-          height={videoReady ? VIDEO_HEIGHT : 0}
-          onReady={() => setVideoReady(true)}
-          onFullScreenChange={onFullScreenChange}
-          onChangeState={onChangeState}
-        />
-
-        { !videoReady && <ActivityIndicator color="red" /> }
-      </View>
+      <ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingTop: 50 }}
+        onScroll={(event) => scrollPercentage(event.nativeEvent)}
+      >
+        { 
+          videoIds.map(videoId => (
+              <VideoCard
+                key={videoId}
+                videoId={videoId}
+              />
+            )
+          )
+        }
+      </ScrollView>
+      
+      <ProgressBar
+        value={percentage}
+        onMoveTop={handleScrollMoveTop}
+      />
     </View>
   )
 }
