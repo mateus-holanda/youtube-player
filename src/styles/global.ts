@@ -9,6 +9,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#000',
     padding: SCREEN_SPACE
   },
+  banner: {
+    width: '100%',
+    height: 75,
+  },
   player: {
     width: '100%',
     height: VIDEO_HEIGHT,

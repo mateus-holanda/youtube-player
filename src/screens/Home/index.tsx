@@ -1,6 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
+import RemoteConfig from "@react-native-firebase/remote-config";
 
+import { Banner } from "../../components/Banner";
 import { ProgressBar } from "../../components/ProgressBar";
 import { VideoCard } from "../../components/VideoCard";
 
@@ -31,6 +33,27 @@ interface ScrollProps {
 }
 
 export function Home() {
+  const [showBannerFlag, setShowBannerFlag] = useState(false);
+
+  async function fetchRemoteConfig() {
+    await RemoteConfig().setConfigSettings({
+      minimumFetchIntervalMillis: 3000
+    });
+
+    await RemoteConfig().setDefaults({
+      show_banner_flag: false
+    });
+
+    await RemoteConfig().fetchAndActivate();
+
+    const response = RemoteConfig().getValue('show_banner_flag');
+    setShowBannerFlag(response.asBoolean());
+  }
+
+  useEffect(() => {
+    fetchRemoteConfig();
+  }, []);
+
   const [percentage, setPercentage] = useState(0);
 
   const scrollRef = useRef<ScrollView>(null);
@@ -62,6 +85,7 @@ export function Home() {
         contentContainerStyle={{ paddingTop: 50 }}
         onScroll={(event) => scrollPercentage(event.nativeEvent)}
       >
+        {showBannerFlag && <Banner />}
         { 
           videoIds.map(videoId => (
               <VideoCard
