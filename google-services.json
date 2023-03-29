@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "160756348136",
+    "project_id": "player-4ac9a",
+    "storage_bucket": "player-4ac9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160756348136:android:c02d60a4ec3feace4d455d",
+        "android_client_info": {
+          "package_name": "com.youtubeplayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160756348136-bd06ijjjj740q8cbr9igf2b8es10ohs2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDY5whkj47qYR6bSRbLWKv5cnZ02U5Fpp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "160756348136-bd06ijjjj740q8cbr9igf2b8es10ohs2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
